@@ -1,0 +1,75 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+# .env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+tsconfig.tsbuildinfo
+ 
+# editors
+.vscode/
+.idea/
+
+# logs
+logs
+*.log
+pnpm-debug.log*
+
+# build output
+dist/
+
+# caches
+.eslintcache
+.stylelintcache
+.cache
+
+# environment files
+# .env
+# .env.development
+# .env.test
+# .env.production
+# .env.local
+# .env.development.local
+# .env.test.local
+# .env.production.local
+
+# OS and temp files
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+.direnv
+.cursor/rules/linting-rule.mdc
+
+.source
+one-time-wallet
