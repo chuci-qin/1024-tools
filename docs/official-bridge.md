@@ -1,57 +1,59 @@
-# 新项目基础框架
+# AI 内容生成器
 
 ## 项目简介
 
-这是一个基于 Next.js 的前端项目框架，保留了现代深色主题 UI 风格和基础架构。
+一款 AI 驱动的社交媒体内容生成工具，用户上传产品图片，AI 自动生成适合小红书、抖音的爆款文案。
+
+## 核心功能
+
+- **我有产品**: 上传产品图 → 选择风格/场景/字数 → AI 生成文案 ✅
+- **对标图文**: 参考爆款内容生成 (待开发)
+- **爆款创作**: 热门话题创作 (待开发)
+- **图片焕新**: 图片优化处理 (待开发)
 
 ## 技术栈
 
-- **框架**：Next.js 14+ (App Router)
-- **样式**：Tailwind CSS
-- **状态管理**：React Query
-- **国际化**：next-intl
-- **通知**：sonner
+- Next.js 14 (App Router) + Tailwind CSS
+- OpenAI GPT-4o-mini (视觉模型)
+- React Query + Sonner (Toast)
 
-## UI 风格
+## 开发进度
 
-- 深色主题：`#111111` 基础背景
-- 渐变光效：
-  - 左上角：青色径向渐变 `rgba(41,122,119,0.75)`
-  - 右下角：橙色径向渐变 `rgba(255,129,39,0.75)`
-- 玻璃态边框：`border-white/10`
-- 现代科技感设计
+- [x] 首页布局 - Banner + 平台选择 + 功能入口 + 底部导航
+- [x] 产品页面 - 图片上传 + 风格/场景/字数选择器
+- [x] 结果页面 - AI生成结果展示 + 复制/重新生成
+- [x] OpenAI API 集成 - 图片理解 + 文案生成
 
-## 项目结构
+## 相关文件
 
-```
-src/
-├── app/
-│   ├── (platform)/         # 平台页面（带导航和背景）
-│   │   ├── layout.tsx      # 平台布局（导航栏 + 背景效果）
-│   │   └── page.tsx        # 首页
-│   ├── layout.tsx          # 根布局
-│   └── page.tsx            # 根页面重定向
-├── components/
-│   ├── common/             # 通用组件（Logo、按钮、语言切换）
-│   ├── providers/          # Provider 组件
-│   └── ui/                 # 基础 UI 组件库
-├── locales/                # 国际化语言文件
-└── styles/                 # Tailwind CSS
+| 文件 | 说明 |
+|------|------|
+| `docs/ai-content-generator.md` | 完整设计文档 |
+| `src/app/(platform)/page.tsx` | 首页 |
+| `src/app/(platform)/product/page.tsx` | 产品页 |
+| `src/app/(platform)/product/result/page.tsx` | 结果页 |
+| `src/app/api/generate/route.ts` | AI 生成接口 |
+
+## 环境变量
+
+```env
+LLM_PROVIDER=openai
+LLM_API_KEY=sk-xxx
+LLM_CHATBOT_MODEL=gpt-4o-mini
 ```
 
 ## 使用方法
 
-### 开发启动
-
 ```bash
-npm install
 npm run dev
 ```
 
-### 添加新页面
+访问 http://localhost:3001
 
-在 `src/app/(platform)/` 下创建目录，新页面自动继承平台布局。
-
-### 自定义布局
-
-修改 `src/app/(platform)/layout.tsx` 可自定义导航栏和背景效果。
+### 测试流程
+1. 访问首页，点击「我有产品」
+2. 上传一张产品图片
+3. 选择文案风格、关联场景、字数
+4. 点击「智能生成文案」
+5. 查看 AI 生成的标题和文案
+6. 复制文案到小红书/抖音发布

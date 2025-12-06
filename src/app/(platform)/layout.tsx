@@ -1,13 +1,23 @@
 "use client";
-import { Settings } from 'lucide-react';
+import { Settings, Sparkles, Bot, LayoutGrid, User } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Logo } from '@components/common/Logo';
+
+const navItems = [
+  { href: '/', icon: Sparkles, label: '创作' },
+  { href: '/agents', icon: Bot, label: '智能体' },
+  { href: '/templates', icon: LayoutGrid, label: '模板' },
+  { href: '/profile', icon: User, label: '我的' },
+];
 
 export default function PlatformLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
   return (
     <div className="flex flex-col h-full bg-gradient-to-r from-[#111111] to-[#111111] text-white relative overflow-hidden">
       {/* Cyan gradients to match Figma design */}
@@ -49,9 +59,36 @@ export default function PlatformLayout({
       </header>
 
       {/* Main content area */}
-      <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden">
+      <div className="relative z-10 flex-1 overflow-y-auto overflow-x-hidden pb-20">
         {children}
       </div>
+
+      {/* Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-[#111111]/90 backdrop-blur-xl border-t border-white/10 px-4 py-3 z-50">
+        <div className="flex items-center justify-around max-w-lg mx-auto">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+            
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all ${
+                  isActive 
+                    ? 'text-[#4cf8f0]' 
+                    : 'text-white/50 hover:text-white/80'
+                }`}
+              >
+                <div className={`p-2 rounded-xl ${isActive ? 'bg-[#4cf8f0]/20' : ''}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

@@ -1,0 +1,12 @@
+# 1) 默认放行所有敏感文件
+!.env
+!.env.*
+!*.pem
+!**/*.pem
+!*.key
+!**/*.key
+
+# 2) 放行安全副本给 AI
+!.env.example
+!.env.dev
+!certs/dev-only.pem
