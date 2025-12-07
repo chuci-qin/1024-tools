@@ -47,7 +47,6 @@ export default function ProductPage() {
   const [selectedWordCount, setSelectedWordCount] = useState(200);
   const [supplement, setSupplement] = useState('');
   const [showSupplement, setShowSupplement] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,48 +75,20 @@ export default function ProductPage() {
 
   const canGenerate = image !== null;
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     if (!canGenerate || !image) return;
     
-    setIsGenerating(true);
-    
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          image: image,
-          style: selectedStyle,
-          scene: selectedScene,
-          wordCount: selectedWordCount,
-          supplement: supplement,
-          platform: 'xiaohongshu',
-        }),
-      });
+    // 存储参数到 sessionStorage，立即跳转
+    sessionStorage.setItem('generateParams', JSON.stringify({
+      image: image,
+      style: selectedStyle,
+      scene: selectedScene,
+      wordCount: selectedWordCount,
+      supplement: supplement,
+      platform: 'xiaohongshu',
+    }));
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || '生成失败');
-      }
-
-      // 存储结果到 sessionStorage
-      sessionStorage.setItem('generateResult', JSON.stringify({
-        title: data.title,
-        content: data.content,
-        image: image,
-      }));
-
-      router.push('/product/result');
-      
-    } catch (error) {
-      console.error('Generate error:', error);
-      toast.error(error instanceof Error ? error.message : '生成失败，请稍后重试');
-    } finally {
-      setIsGenerating(false);
-    }
+    router.push('/product/result');
   };
 
   return (
@@ -297,24 +268,15 @@ export default function ProductPage() {
           
           <button
             onClick={handleGenerate}
-            disabled={!canGenerate || isGenerating}
+            disabled={!canGenerate}
             className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
               canGenerate
                 ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:from-indigo-500 hover:to-violet-500'
                 : 'bg-white/10 text-white/30 cursor-not-allowed'
             }`}
           >
-            {isGenerating ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>AI 生成中...</span>
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5" />
-                <span>智能生成文案</span>
-              </>
-            )}
+            <Sparkles className="w-5 h-5" />
+            <span>智能生成文案</span>
           </button>
         </div>
       </div>
