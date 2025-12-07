@@ -26,6 +26,7 @@ const sceneOptions = [
   { id: 'food', label: '美食' },
   { id: 'digital', label: '数码' },
   { id: 'baby', label: '母婴' },
+  { id: 'antique', label: '古玩藏品' },
 ];
 
 // 文案字数选项
