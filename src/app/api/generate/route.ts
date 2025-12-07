@@ -20,6 +20,7 @@ const sceneDescriptions: Record<string, string> = {
   food: '美食餐饮',
   digital: '数码科技',
   baby: '母婴育儿',
+  antique: '古玩藏品',
 };
 
 export async function POST(request: NextRequest) {
@@ -48,6 +49,13 @@ export async function POST(request: NextRequest) {
     const sceneDesc = sceneDescriptions[scene] || sceneDescriptions.default;
     const platformName = platform === 'xiaohongshu' ? '小红书' : '抖音';
 
+    // 古玩藏品场景的特殊提示
+    const antiqueHint = scene === 'antique' 
+      ? `\n\n古玩藏品专业知识：
+- 如果看到有3个古钱币叠放在一起，请提到"钱到家"这个名词，这是取自"乾隆道光嘉靖"三个年号的谐音，寓意财源广进、招财进宝
+- 请适当融入古玩收藏的专业术语和文化内涵`
+      : '';
+
     const systemPrompt = `你是一个专业的社交媒体文案写手，擅长为${platformName}平台创作爆款内容。
 
 你的任务是根据用户提供的产品图片，生成吸引人的标题和文案。
@@ -61,7 +69,7 @@ export async function POST(request: NextRequest) {
 6. 末尾添加3-5个相关话题标签（#xxx格式）
 
 风格要求：${styleDesc}
-场景定位：${sceneDesc}
+场景定位：${sceneDesc}${antiqueHint}
 
 直接输出内容，不要任何额外说明。`;
 
