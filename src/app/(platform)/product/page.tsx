@@ -104,7 +104,7 @@ export default function ProductPage() {
         </div>
       </div>
 
-      <div className="px-4 py-6 space-y-6">
+      <div className="px-4 py-6 pb-32 space-y-6">
         {/* 产品图片上传 */}
         <section>
           <div className="flex items-center gap-2 mb-4">
