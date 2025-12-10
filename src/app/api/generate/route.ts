@@ -81,14 +81,30 @@ export async function POST(request: NextRequest) {
 - 有节奏感，一来一回像说相声`
       : '';
 
+    // 根据字数给出更具体的指导
+    const wordCountGuide = wordCount <= 50 
+      ? '极简风格，2-3句话即可' 
+      : wordCount <= 100 
+        ? '简洁有力，4-6句话' 
+        : wordCount <= 200 
+          ? '详细介绍，8-12句话' 
+          : wordCount <= 500 
+            ? '深度描述，多个段落，全面介绍产品'
+            : '完整长文案，包含详细的产品介绍、使用场景、用户痛点、产品优势等';
+
     const systemPrompt = `你是一个专业的社交媒体文案写手，擅长为${platformName}平台创作爆款内容。
 
 你的任务是根据用户提供的产品图片，生成吸引人的标题和文案。
 
-要求：
+【字数要求 - 非常重要！】
+用户要求正文文案字数为：${wordCount}字左右
+要求说明：${wordCountGuide}
+请严格控制字数在 ${Math.floor(wordCount * 0.8)} - ${Math.floor(wordCount * 1.2)} 字之间，不要超出太多也不要太少！
+
+【输出格式】
 1. 首先输出标题（一行，带1-2个emoji，20字以内）
 2. 然后空一行
-3. 接着输出正文文案（口语化、有感染力，约${wordCount}字）
+3. 接着输出正文文案（严格控制在${wordCount}字左右！）
 4. 适当使用emoji和${platformName}流行的网络热词
 5. 文案要突出产品卖点和使用场景
 6. 末尾添加3-5个相关话题标签（#xxx格式）
