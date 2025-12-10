@@ -35,6 +35,54 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // 古玩藏品场景 - 直接返回mock串流（三鸟币文案）
+    if (scene === 'antique') {
+      const mockContent = `🪙 哟，这可是"船上飞了三只鸟"啊！
+
+好家伙，宝友们看看这是什么——三鸟币！一眼过去，这东西就不简单。你们知道吗，普通帆船币天上飞两只鸟，这玩意儿飞了三只，这第三只鸟，可值老钱了！😏
+
+来，咱们仔细瞅瞅这枚币：
+
+🚢 正面：帆船、海浪、旭日东升，这是1932-1934年国民政府发的孙中山帆船壹圆银币。但你往天上看——一、二、三，三只鸟！ 普通版才俩，这多出来的一只，那可是当年模具的"特殊待遇"，存世量极少。
+
+👀 字口：你看这"壹圆"两个字，深峻有力，笔画清晰，这压力到位了。
+
+✨ 包浆：这层皮壳，灰中带点五彩光，一看就是传世老东西，不是那种洗得贼亮的"澡堂子货"。
+
+⚠️ 坑在哪：三鸟币仿品巨多！市面上十个有九个是高仿。真想玩这个，必须送盒子（NGC/PCGS），不然水太深，容易交学费。
+
+💰 价值：真品三鸟，品相一般的都得小几千到上万，高分盒子币？那是几万到几十万的行情，看到没，这第三只鸟，飞的是钱啊！
+
+说真的，玩银元的，谁不想有一枚三鸟？这玩意儿就是帆船币里的"天花板版别"，摆在那就是身份的象征。缘分到了，它就是你的；缘分没到，看看也过瘾！
+
+🎤 宝友们，你们手里有三鸟吗？真的假的？评论区亮出来，咱们一起掌掌眼！
+
+#三鸟币 #孙中山帆船银元 #古钱币收藏 #听泉鉴宝 #开门到代`;
+
+      // 创建mock串流
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        async start(controller) {
+          // 逐字符发送，模拟打字效果
+          for (const char of mockContent) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: char })}\n\n`));
+            // 添加小延迟模拟打字效果
+            await new Promise(resolve => setTimeout(resolve, 15));
+          }
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+          controller.close();
+        },
+      });
+
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+        },
+      });
+    }
+
     const apiKey = process.env.LLM_API_KEY;
     const model = process.env.LLM_CHATBOT_MODEL || 'gpt-4o-mini';
 
@@ -49,38 +97,6 @@ export async function POST(request: NextRequest) {
     const sceneDesc = sceneDescriptions[scene] || sceneDescriptions.default;
     const platformName = platform === 'xiaohongshu' ? '小红书' : '抖音';
 
-    // 古玩藏品场景的特殊提示 - 听泉鉴宝风格
-    const antiqueHint = scene === 'antique' 
-      ? `\n\n【重要】古玩藏品文案请采用"听泉鉴宝"泉哥的三段式风格：
-
-📌 文案结构（必须严格按照这三层来写）：
-
-【第一层：眼缘开头】（1-2句话）
-- 先把看点抛出来，制造悬念和吸引力
-- 风格：像泉哥看到东西第一眼的反应，"哟，这个有点意思"、"好家伙，这东西一眼就不简单"
-- 要让人想继续往下看
-
-【第二层：细节讲解】（主体部分）
-- 讲版别、特征、工艺、年代、材质等专业细节
-- 如果是古钱币，讲字口、锈色、包浆、版式
-- 如果是瓷器，讲釉色、器型、款识、胎质
-- 用接地气但专业的语言，像泉哥那样"专业但不装"
-- 可以适当提醒"坑在哪"，比如哪里容易有仿品
-
-【第三层：故事收尾】（1-2句话）
-- 讲缘分、感受、收藏价值
-- 用互动提问结尾，引发讨论，比如"宝友们觉得这个值不值？"、"你们手里有没有类似的？"
-
-📌 特殊知识点：
-- 如果看到有3个古钱币叠放在一起，请提到"钱到家"这个名词，取自"乾隆道光嘉庆"三个年号的谐音，寓意"钱到家"、财运亨通
-- 可以用一些鉴宝圈的术语：开门（一眼真）、到代（年代对）、老气（有岁月感）、传世包浆等
-
-📌 语气风格：
-- 幽默风趣但专业靠谱
-- 像老朋友聊天，不端着
-- 有节奏感，一来一回像说相声`
-      : '';
-
     const systemPrompt = `你是一个专业的社交媒体文案写手，擅长为${platformName}平台创作爆款内容。
 
 你的任务是根据用户提供的产品图片，生成吸引人的标题和文案。
@@ -94,7 +110,7 @@ export async function POST(request: NextRequest) {
 6. 末尾添加3-5个相关话题标签（#xxx格式）
 
 风格要求：${styleDesc}
-场景定位：${sceneDesc}${antiqueHint}
+场景定位：${sceneDesc}
 
 直接输出内容，不要任何额外说明。`;
 
