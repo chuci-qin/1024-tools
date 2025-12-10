@@ -63,11 +63,14 @@ export async function POST(request: NextRequest) {
       const encoder = new TextEncoder();
       const stream = new ReadableStream({
         async start(controller) {
+          // 开始前先停顿2秒，模拟AI思考
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
           // 逐字符发送，模拟打字效果
           for (const char of mockContent) {
             controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: char })}\n\n`));
-            // 添加小延迟模拟打字效果
-            await new Promise(resolve => setTimeout(resolve, 15));
+            // 添加延迟模拟打字效果（40ms，更慢更自然）
+            await new Promise(resolve => setTimeout(resolve, 40));
           }
           controller.enqueue(encoder.encode('data: [DONE]\n\n'));
           controller.close();
