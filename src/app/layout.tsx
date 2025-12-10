@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { QueryProvider } from '@/components/providers/QueryProvider'
 import { Toaster } from 'sonner'
 import { Orbitron } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 
 const orbitron = Orbitron({ 
   subsets: ['latin'],
@@ -42,6 +43,7 @@ export default function RootLayout({
           <main className="h-screen overflow-hidden">{children}</main>
         </QueryProvider>
         <Toaster richColors position="top-right" />
+        <Analytics />
       </body>
     </html>
   )
