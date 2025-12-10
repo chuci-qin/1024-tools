@@ -35,66 +35,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 古玩藏品场景 - 直接返回mock串流
-    if (scene === 'antique') {
-      const mockContent = `💰 "钱到家"——让财运与福气一次到位 🏠
-
-有没有一样东西，让「古典」「吉祥」「文化感」一次性满分？——这就是"钱到家"。
-
-"钱到家"不是一句简单的祝福，而是来自历史的馈赠：它由三枚曾流通于清朝时期的铜钱组成 —— 乾隆通宝、嘉庆通宝、道光通宝。三枚古钱合在一起，谐音"钱-到-家"，象征"财运到家、福气满门"。
-
-✨ 它不仅是钱，更是一种象征 ——
-
-📈 招财纳福：寓意财富与好运"到家"，为新年、新人、乔迁、开业等送上祝福。
-
-🏡 守护安泰：古钱圆孔方形，古人讲"天圆地方"，象征天地人三才，寓意家运绵长、平安稳固。
-
-🖼️ 文化收藏感：作为"古币 + 风水 + 文创"结合的存在，收藏它不仅是一份心意，也是一种生活态度。
-
-💫 如果你想为自己或家人／朋友：
-
-🌸 开启新年、新篇章；
-
-🏠 营造有温度、有寓意的生活空间；
-
-🎁 送上一份既有传统文化底蕴又有美好寓意的礼物 ——
-
-那么"钱到家"，真的很值得考虑。
-
-✅ 小建议
-
-📍 摆放／佩戴方式：可放在家中客厅、书房、玄关，或随身携带护身／化煞／寓意招财。
-
-🎁 送礼首选：春节、乔迁、开业、礼尚往来……既有仪式感，也寓意吉祥。
-
-❤️ 收藏价值：适合喜欢传统文化、有收藏／文创爱好的你，一枚"古钱 + 故事 + 美感"的融合体。
-
-#钱到家 #古玩收藏 #乾隆通宝 #招财进宝 #传统文化`;
-
-      // 创建mock串流
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream({
-        async start(controller) {
-          // 逐字符发送，模拟打字效果
-          for (const char of mockContent) {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: char })}\n\n`));
-            // 添加小延迟模拟打字效果
-            await new Promise(resolve => setTimeout(resolve, 15));
-          }
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'));
-          controller.close();
-        },
-      });
-
-      return new Response(stream, {
-        headers: {
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive',
-        },
-      });
-    }
-
     const apiKey = process.env.LLM_API_KEY;
     const model = process.env.LLM_CHATBOT_MODEL || 'gpt-4o-mini';
 
@@ -109,6 +49,38 @@ export async function POST(request: NextRequest) {
     const sceneDesc = sceneDescriptions[scene] || sceneDescriptions.default;
     const platformName = platform === 'xiaohongshu' ? '小红书' : '抖音';
 
+    // 古玩藏品场景的特殊提示 - 听泉鉴宝风格
+    const antiqueHint = scene === 'antique' 
+      ? `\n\n【重要】古玩藏品文案请采用"听泉鉴宝"泉哥的三段式风格：
+
+📌 文案结构（必须严格按照这三层来写）：
+
+【第一层：眼缘开头】（1-2句话）
+- 先把看点抛出来，制造悬念和吸引力
+- 风格：像泉哥看到东西第一眼的反应，"哟，这个有点意思"、"好家伙，这东西一眼就不简单"
+- 要让人想继续往下看
+
+【第二层：细节讲解】（主体部分）
+- 讲版别、特征、工艺、年代、材质等专业细节
+- 如果是古钱币，讲字口、锈色、包浆、版式
+- 如果是瓷器，讲釉色、器型、款识、胎质
+- 用接地气但专业的语言，像泉哥那样"专业但不装"
+- 可以适当提醒"坑在哪"，比如哪里容易有仿品
+
+【第三层：故事收尾】（1-2句话）
+- 讲缘分、感受、收藏价值
+- 用互动提问结尾，引发讨论，比如"宝友们觉得这个值不值？"、"你们手里有没有类似的？"
+
+📌 特殊知识点：
+- 如果看到有3个古钱币叠放在一起，请提到"钱到家"这个名词，取自"乾隆道光嘉庆"三个年号的谐音，寓意"钱到家"、财运亨通
+- 可以用一些鉴宝圈的术语：开门（一眼真）、到代（年代对）、老气（有岁月感）、传世包浆等
+
+📌 语气风格：
+- 幽默风趣但专业靠谱
+- 像老朋友聊天，不端着
+- 有节奏感，一来一回像说相声`
+      : '';
+
     const systemPrompt = `你是一个专业的社交媒体文案写手，擅长为${platformName}平台创作爆款内容。
 
 你的任务是根据用户提供的产品图片，生成吸引人的标题和文案。
@@ -122,7 +94,7 @@ export async function POST(request: NextRequest) {
 6. 末尾添加3-5个相关话题标签（#xxx格式）
 
 风格要求：${styleDesc}
-场景定位：${sceneDesc}
+场景定位：${sceneDesc}${antiqueHint}
 
 直接输出内容，不要任何额外说明。`;
 
