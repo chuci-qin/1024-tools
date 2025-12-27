@@ -37,9 +37,9 @@
 ## 环境变量
 
 ```env
-LLM_PROVIDER=openai
 LLM_API_KEY=sk-xxx
 LLM_CHATBOT_MODEL=gpt-4o-mini
+LLM_BASE_URL=https://api.openai.com/v1  # 可选，默认为 OpenAI，通义千问可用 https://dashscope.aliyuncs.com/compatible-mode/v1
 ```
 
 ## 使用方法

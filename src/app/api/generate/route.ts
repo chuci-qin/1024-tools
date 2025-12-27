@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
 
     const apiKey = process.env.LLM_API_KEY;
     const model = process.env.LLM_CHATBOT_MODEL || 'gpt-4o-mini';
+    const baseUrl = process.env.LLM_BASE_URL || 'https://api.openai.com/v1';
 
     if (!apiKey) {
       return new Response(JSON.stringify({ error: 'API Key 未配置' }), {
@@ -118,8 +119,8 @@ export async function POST(request: NextRequest) {
       ? `请根据这张产品图片生成${platformName}文案。\n\n补充信息：${supplement}`
       : `请根据这张产品图片生成${platformName}文案。`;
 
-    // 调用 OpenAI API (Streaming)
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // 调用 LLM API (Streaming) - 支持 OpenAI 兼容接口（如通义千问）
+    const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
@@ -150,7 +151,7 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('OpenAI API Error:', errorData);
+      console.error('LLM API Error:', errorData);
       return new Response(JSON.stringify({ error: `AI 服务错误: ${response.status}` }), {
         status: response.status,
         headers: { 'Content-Type': 'application/json' },
